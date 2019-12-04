@@ -325,6 +325,136 @@ void QuickSort1D(std::vector<T> &iDataArr, int iLeft, int iRight, bool bOrder = 
     }
 }
 
+// 合并
+template <typename T>
+void merge(T* src, T* dst, int begin, int mid, int end, bool bOrder = 1)
+{
+    int begin1 = begin;
+    int begin2 = mid;
+    int index = begin;
+    while (begin1 < mid && begin2 < end)
+    {
+        if (bOrder) // 升序
+        {
+            if (src[begin1] < src[begin2])
+            {
+                dst[index++] = src[begin1++];
+            }
+            else
+            {
+                dst[index++] = src[begin2++];
+            }
+        }
+        else // 降序
+        {
+            if (src[begin1] > src[begin2])
+            {
+                dst[index++] = src[begin1++];
+            }
+            else
+            {
+                dst[index++] = src[begin2++];
+            }
+        }
+    }
+    while (begin1 < mid)
+    {
+        dst[index++] = src[begin1++];
+    }
+    while (begin2 < end)
+    {
+        dst[index++] = src[begin2++];
+    }
+    memcpy(src + begin, dst + begin, (end - begin) * sizeof(T));
+}
+template <typename T>
+void _merge_sort(T* arr, T* tmp, int left, int right, bool bOrder = 1)
+{
+    if (left + 1 >= right)
+    {
+        return;
+    }
+    int mid = left + (right - left) / 2;
+    _merge_sort(arr, tmp, left, mid, bOrder);
+    _merge_sort(arr, tmp, mid, right, bOrder);
+    merge(arr, tmp, left, mid, right, bOrder);
+}
+// 归并排序, 时间复杂度O(nlogn), 空间复杂度O(n), 稳定
+// iDataArr: input/output, 数据数组
+// iDataSize: input, 数据长度
+// bOrder: input, 排序顺序, 0-从高到低(升序), 1-从低到高(降序)
+template <typename T>
+void MergeSort1D(T* arr, int size, bool bOrder = 1)
+{
+    T* tmp = (T*)malloc(size * sizeof(T));
+    _merge_sort(arr, tmp, 0, size, bOrder);
+    free(tmp);
+}
+// 合并
+template <typename T>
+void merge(std::vector<T> &src, std::vector<T> &dst, int begin, int mid, int end, bool bOrder = 1)
+{
+    int begin1 = begin;
+    int begin2 = mid;
+    int index = begin;
+    while (begin1 < mid && begin2 < end)
+    {
+        if (bOrder) // 升序
+        {
+            if (src[begin1] < src[begin2])
+            {
+                dst[index++] = src[begin1++];
+            }
+            else
+            {
+                dst[index++] = src[begin2++];
+            }
+        }
+        else // 降序
+        {
+            if (src[begin1] > src[begin2])
+            {
+                dst[index++] = src[begin1++];
+            }
+            else
+            {
+                dst[index++] = src[begin2++];
+            }
+        }
+    }
+    while (begin1 < mid)
+    {
+        dst[index++] = src[begin1++];
+    }
+    while (begin2 < end)
+    {
+        dst[index++] = src[begin2++];
+    }
+    std::copy(dst.begin() + begin, dst.begin() + end, src.begin() + begin);
+}
+template <typename T>
+void _merge_sort(std::vector<T> &arr, std::vector<T> &tmp, int left, int right, bool bOrder = 1)
+{
+    if (left + 1 >= right)
+    {
+        return;
+    }
+    int mid = left + (right - left) / 2;
+    _merge_sort(arr, tmp, left, mid, bOrder);
+    _merge_sort(arr, tmp, mid, right, bOrder);
+    merge(arr, tmp, left, mid, right, bOrder);
+}
+// 归并排序, 时间复杂度O(nlogn), 空间复杂度O(n), 稳定
+// iDataArr: input/output, 数据数组
+// iDataSize: input, 数据长度
+// bOrder: input, 排序顺序, 0-从高到低(升序), 1-从低到高(降序)
+template <typename T>
+void MergeSort1D(std::vector<T> &arr, int size, bool bOrder = 1)
+{
+    std::vector<T> tmp(size);
+    _merge_sort(arr, tmp, 0, size, bOrder);
+}
+
 int test1()
 {
     int test_data[] = { 3,6,1,9,4,2,0,5,8,7,10 };
@@ -334,7 +464,8 @@ int test1()
         printf("%d, ", test_data[i]);
     }
     printf("\n");
-    BubbleSort1D(test_data, test_size, 0);
+    MergeSort1D(test_data, test_size, 0);
+    //BubbleSort1D(test_data, test_size, 0);
     //QuickSort1D(test_data, 0, test_size-1, 1);
     for (int i = 0; i < test_size; i++)
     {
@@ -347,14 +478,15 @@ int test1()
 
 int test2()
 {
-    std::vector<uint16_t> test_data = { 3,6,1,9,4,2,0,5,8,7,10 };
+    std::vector<uint16_t> test_data = { 3,6,1,9,4,2,0,5,8,7,10,20,15,19,16,18 };
     int test_size = test_data.size();
     for (int i = 0; i < test_size; i++)
     {
         printf("%d, ", test_data[i]);
     }
     printf("\n");
-    BubbleSort1D(test_data, test_size, 0);
+    MergeSort1D(test_data, test_size, 0);
+    //BubbleSort1D(test_data, test_size, 0);
     //QuickSort1D(test_data, 0, test_size-1, 1);
     for (int i = 0; i < test_size; i++)
     {
