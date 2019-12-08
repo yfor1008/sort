@@ -8,7 +8,7 @@
 // iDataA: input/output, 数据A
 // iDataB: input/output, 数据B
 template <typename T>
-void swap(T& iDataA, T& iDataB)
+void swap(T &iDataA, T &iDataB)
 {
     T tmp;
     tmp = iDataA;
@@ -21,7 +21,7 @@ void swap(T& iDataA, T& iDataB)
 // iDataSize: input, 数据长度
 // bOrder: input, 排序顺序, 0-从高到低(升序), 1-从低到高(降序)
 template <typename T>
-void InsertSort1D(T *iDataArr, int iDataSize, bool bOrder=1)
+void InsertSort1D(T *iDataArr, int iDataSize, bool bOrder = 1)
 {
     int i = 0, j = 0;
     T tmp = 0;
@@ -84,7 +84,7 @@ void InsertSort1D(std::vector<T> &iDataArr, int iDataSize, bool bOrder = 1)
 // iDataSize: input, 数据长度
 // bOrder: input, 排序顺序, 0-从高到低(升序), 1-从低到高(降序)
 template <typename T>
-void SelectSort1D(T* iDataArr, int iDataSize, bool bOrder=1)
+void SelectSort1D(T *iDataArr, int iDataSize, bool bOrder = 1)
 {
     int i = 0, j = 0;
     int k = 0;
@@ -151,7 +151,7 @@ void SelectSort1D(std::vector<T> &iDataArr, int iDataSize, bool bOrder = 1)
 // iDataSize: input, 数据长度
 // bOrder: input, 排序顺序, 0-从高到低(升序), 1-从低到高(降序)
 template <typename T>
-void BubbleSort1D(T* iDataArr, int iDataSize, bool bOrder = 1)
+void BubbleSort1D(T *iDataArr, int iDataSize, bool bOrder = 1)
 {
     int i = 0, j = 0;
     for (i = 0; i < iDataSize; i++)
@@ -201,9 +201,9 @@ void BubbleSort1D(std::vector<T> &iDataArr, int iDataSize, bool bOrder = 1)
     }
 }
 
-// 
+//
 template <typename T>
-int Paritition1(T* iDataArr, int iLeft, int iRight, bool bOrder = 1)
+int Paritition1(T *iDataArr, int iLeft, int iRight, bool bOrder = 1)
 {
     T pivot = iDataArr[iLeft];
     while (iLeft < iRight)
@@ -305,7 +305,7 @@ int Paritition1(std::vector<T> &iDataArr, int iLeft, int iRight, bool bOrder = 1
 // iRight: input, 数组最右边的index, 数组长度-1
 // bOrder: input, 排序顺序, 0-从高到低(升序), 1-从低到高(降序)
 template <typename T>
-void QuickSort1D(T* iDataArr, int iLeft, int iRight, bool bOrder = 1)
+void QuickSort1D(T *iDataArr, int iLeft, int iRight, bool bOrder = 1)
 {
     if (iLeft < iRight)
     {
@@ -327,7 +327,7 @@ void QuickSort1D(std::vector<T> &iDataArr, int iLeft, int iRight, bool bOrder = 
 
 // 合并
 template <typename T>
-void merge(T* src, T* dst, int begin, int mid, int end, bool bOrder = 1)
+void merge(T *src, T *dst, int begin, int mid, int end, bool bOrder = 1)
 {
     int begin1 = begin;
     int begin2 = mid;
@@ -368,7 +368,7 @@ void merge(T* src, T* dst, int begin, int mid, int end, bool bOrder = 1)
     memcpy(src + begin, dst + begin, (end - begin) * sizeof(T));
 }
 template <typename T>
-void _merge_sort(T* arr, T* tmp, int left, int right, bool bOrder = 1)
+void _merge_sort(T *arr, T *tmp, int left, int right, bool bOrder = 1)
 {
     if (left + 1 >= right)
     {
@@ -384,9 +384,9 @@ void _merge_sort(T* arr, T* tmp, int left, int right, bool bOrder = 1)
 // iDataSize: input, 数据长度
 // bOrder: input, 排序顺序, 0-从高到低(升序), 1-从低到高(降序)
 template <typename T>
-void MergeSort1D(T* arr, int size, bool bOrder = 1)
+void MergeSort1D(T *arr, int size, bool bOrder = 1)
 {
-    T* tmp = (T*)malloc(size * sizeof(T));
+    T *tmp = (T *)malloc(size * sizeof(T));
     _merge_sort(arr, tmp, 0, size, bOrder);
     free(tmp);
 }
@@ -455,16 +455,216 @@ void MergeSort1D(std::vector<T> &arr, int size, bool bOrder = 1)
     _merge_sort(arr, tmp, 0, size, bOrder);
 }
 
+// 希尔排序: 时间复杂度O(nlogn), 空间复杂度O(1), 不稳定
+// iDataArr: input/output, 数据数组
+// iDataSize: input, 数据长度
+// bOrder: input, 排序顺序, 0-从高到低(升序), 1-从低到高(降序)
+template <typename T>
+void ShellSort(T *iDataArr, int iDataSize, bool bOrder = 1)
+{
+    int gap = 1;
+    // 寻找合适的间隔gap
+    while (gap < iDataSize / 3)
+    {
+        gap = gap * 3 + 1;
+    }
+    while (gap > 0)
+    {
+        // 分组，在每个子序列中进行插入排序
+        for (int i = gap; i < iDataSize; i++)
+        {
+            T tmp = iDataArr[i]; // 将当前的元素值先存起来方便后面插入
+            int j = i - gap;
+            if (bOrder) // 升序
+            {
+                while (j >= 0 && iDataArr[j] > tmp) // 寻找插入位置
+                {
+                    iDataArr[j + gap] = iDataArr[j];
+                    j -= gap;
+                }
+            }
+            else // 降序
+            {
+                while (j >= 0 && iDataArr[j] < tmp) // 寻找插入位置
+                {
+                    iDataArr[j + gap] = iDataArr[j];
+                    j -= gap;
+                }
+            }
+            iDataArr[j + gap] = tmp;
+        }
+        gap = gap / 3;
+    }
+}
+template <typename T>
+void ShellSort(std::vector<T> &iDataArr, int iDataSize, bool bOrder = 1)
+{
+    int gap = 1;
+    // 寻找合适的间隔gap
+    while (gap < iDataSize / 3)
+    {
+        gap = gap * 3 + 1;
+    }
+    while (gap > 0)
+    {
+        // 分组，在每个子序列中进行插入排序
+        for (int i = gap; i < iDataSize; i++)
+        {
+            T tmp = iDataArr[i]; // 将当前的元素值先存起来方便后面插入
+            int j = i - gap;
+            if (bOrder) // 升序
+            {
+                while (j >= 0 && iDataArr[j] > tmp) // 寻找插入位置
+                {
+                    iDataArr[j + gap] = iDataArr[j];
+                    j -= gap;
+                }
+            }
+            else // 降序
+            {
+                while (j >= 0 && iDataArr[j] < tmp) // 寻找插入位置
+                {
+                    iDataArr[j + gap] = iDataArr[j];
+                    j -= gap;
+                }
+            }
+            iDataArr[j + gap] = tmp;
+        }
+        gap = gap / 3;
+    }
+}
+
+// 计数排序, 时间复杂度O(n+k), 空间复杂度O(k), 稳定
+// iDataArr: input/output, 数据数组
+// iDataSize: input, 数据长度
+// bOrder: input, 排序顺序, 0-从高到低(升序), 1-从低到高(降序)
+template <typename T>
+void CountSort(T *iDataArr, int iDataSize, bool bOrder = 1)
+{
+    T max_val, min_val;
+    max_val = min_val = iDataArr[0];
+
+    // 查找最大最小值
+    for (int i = 0; i < iDataSize; i++)
+    {
+        if (iDataArr[i] > max_val)
+        {
+            max_val = iDataArr[i];
+        }
+        if (iDataArr[i] < min_val)
+        {
+            min_val = iDataArr[i];
+        }
+    }
+
+    // 计算数据范围
+    int range = max_val - min_val + 1;
+
+    // 计数
+    T *count = (T *)malloc(range * sizeof(T));
+    for (int i = 0; i < range; i++)
+    {
+        count[i] = 0;
+    }
+    for (int i = 0; i < iDataSize; i++)
+    {
+        count[iDataArr[i] - min_val] += 1;
+    }
+
+    // 排序输出
+    int id = 0;
+    if (bOrder) // 升序
+    {
+        for (int i = min_val; i <= max_val; i++)
+        {
+            for (int j = 0; j < count[i - min_val]; j++)
+            {
+                iDataArr[id++] = i;
+            }
+        }
+    }
+    else //降序
+    {
+        for (int i = max_val; i >= min_val; i--)
+        {
+            for (int j = 0; j < count[i - min_val]; j++)
+            {
+                iDataArr[id++] = i;
+            }
+        }
+    }
+
+    free(count);
+}
+template <typename T>
+void CountSort(std::vector<T> &iDataArr, int iDataSize, bool bOrder = 1)
+{
+    T max_val, min_val;
+    max_val = min_val = iDataArr[0];
+
+    // 查找最大最小值
+    for (int i = 0; i < iDataSize; i++)
+    {
+        if (iDataArr[i] > max_val)
+        {
+            max_val = iDataArr[i];
+        }
+        if (iDataArr[i] < min_val)
+        {
+            min_val = iDataArr[i];
+        }
+    }
+
+    // 计算数据范围
+    int range = max_val - min_val + 1;
+
+    // 计数
+    std::vector<T> count(range);
+    for (int i = 0; i < range; i++)
+    {
+        count[i] = 0;
+    }
+    for (int i = 0; i < iDataSize; i++)
+    {
+        count[iDataArr[i] - min_val] += 1;
+    }
+
+    // 排序输出
+    int id = 0;
+    if (bOrder) // 升序
+    {
+        for (int i = min_val; i <= max_val; i++)
+        {
+            for (int j = 0; j < count[i - min_val]; j++)
+            {
+                iDataArr[id++] = i;
+            }
+        }
+    }
+    else //降序
+    {
+        for (int i = max_val; i >= min_val; i--)
+        {
+            for (int j = 0; j < count[i - min_val]; j++)
+            {
+                iDataArr[id++] = i;
+            }
+        }
+    }
+}
+
 int test1()
 {
-    int test_data[] = { 3,6,1,9,4,2,0,5,8,7,10 };
+    int test_data[] = {3, 6, 1, 9, 4, 2, 0, 5, 8, 7, 10, 20, 15, 19, 16, 18};
     int test_size = sizeof(test_data) / sizeof(test_data[0]);
     for (int i = 0; i < test_size; i++)
     {
         printf("%d, ", test_data[i]);
     }
     printf("\n");
-    MergeSort1D(test_data, test_size, 0);
+    CountSort(test_data, test_size, 0);
+    //ShellSort(test_data, test_size, 1);
+    //MergeSort1D(test_data, test_size, 0);
     //BubbleSort1D(test_data, test_size, 0);
     //QuickSort1D(test_data, 0, test_size-1, 1);
     for (int i = 0; i < test_size; i++)
@@ -478,14 +678,16 @@ int test1()
 
 int test2()
 {
-    std::vector<uint16_t> test_data = { 3,6,1,9,4,2,0,5,8,7,10,20,15,19,16,18 };
+    std::vector<uint16_t> test_data = {3, 6, 1, 9, 4, 2, 0, 5, 8, 7, 10, 20, 15, 19, 16, 18};
     int test_size = test_data.size();
     for (int i = 0; i < test_size; i++)
     {
         printf("%d, ", test_data[i]);
     }
     printf("\n");
-    MergeSort1D(test_data, test_size, 0);
+    CountSort(test_data, test_size, 1);
+    //ShellSort(test_data, test_size, 0);
+    //MergeSort1D(test_data, test_size, 0);
     //BubbleSort1D(test_data, test_size, 0);
     //QuickSort1D(test_data, 0, test_size-1, 1);
     for (int i = 0; i < test_size; i++)
