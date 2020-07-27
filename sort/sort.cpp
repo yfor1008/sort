@@ -16,6 +16,44 @@ void swap(T &iDataA, T &iDataB)
     iDataB = tmp;
 }
 
+// 查找最大、最小值
+// iDataArr: input/output, 数据数组
+// iDataSize: input, 数据长度
+// maxval: output, 最大值
+// minval: output, 最小值
+template <typename T>
+void MaxMinVal(T *iDataArr, int iDataSize, T &maxval, T &minval)
+{
+    maxval = minval = iDataArr[0];
+    for (int i = 0; i < iDataSize; i++)
+    {
+        if (iDataArr[i] > maxval)
+        {
+            maxval = iDataArr[i];
+        }
+        if (iDataArr[i] < minval)
+        {
+            minval = iDataArr[i];
+        }
+    }
+}
+template <typename T>
+void MaxMinVal(std::vector<T> &iDataArr, int iDataSize, T &maxval, T &minval)
+{
+    maxval = minval = iDataArr[0];
+    for (int i = 0; i < iDataSize; i++)
+    {
+        if (iDataArr[i] > maxval)
+        {
+            maxval = iDataArr[i];
+        }
+        if (iDataArr[i] < minval)
+        {
+            minval = iDataArr[i];
+        }
+    }
+}
+
 // 插入排序: 一维排序, 时间复杂度O(n^2), 空间复杂度O(1), 稳定
 // iDataArr: input/output, 数据数组
 // iDataSize: input, 数据长度
@@ -545,17 +583,7 @@ void CountSort(T *iDataArr, int iDataSize, bool bOrder = 1)
     max_val = min_val = iDataArr[0];
 
     // 查找最大最小值
-    for (int i = 0; i < iDataSize; i++)
-    {
-        if (iDataArr[i] > max_val)
-        {
-            max_val = iDataArr[i];
-        }
-        if (iDataArr[i] < min_val)
-        {
-            min_val = iDataArr[i];
-        }
-    }
+    MaxMinVal(iDataArr, iDataSize, max_val, min_val);
 
     // 计算数据范围
     int range = max_val - min_val + 1;
@@ -603,17 +631,7 @@ void CountSort(std::vector<T> &iDataArr, int iDataSize, bool bOrder = 1)
     max_val = min_val = iDataArr[0];
 
     // 查找最大最小值
-    for (int i = 0; i < iDataSize; i++)
-    {
-        if (iDataArr[i] > max_val)
-        {
-            max_val = iDataArr[i];
-        }
-        if (iDataArr[i] < min_val)
-        {
-            min_val = iDataArr[i];
-        }
-    }
+    MaxMinVal(iDataArr, iDataSize, max_val, min_val);
 
     // 计算数据范围
     int range = max_val - min_val + 1;
@@ -653,6 +671,182 @@ void CountSort(std::vector<T> &iDataArr, int iDataSize, bool bOrder = 1)
     }
 }
 
+// 调整，由上至下堆有序化
+// iDataArr: input/output, 数据数组
+// iIdx: input, index
+// iDataSize: input, 数据长度
+// bOrder: input, 排序顺序, 0-从高到低(升序), 1-从低到高(降序)
+template <typename T>
+void Adjust(T *iDataArr, int iIdx, int iDataSize, bool bOrder = 1)
+{
+    T tmp = iDataArr[iIdx]; // 暂时存放要调整的数据
+    if (bOrder)
+    {
+        for (int i = iIdx * 2 + 1; i <= iDataSize; i++) // 从要调整的数据的左孩子开始比较
+        {
+            // 选出左右孩子中的最大结点
+            if (i + 1 <= iDataSize && iDataArr[i] < iDataArr[i + 1])
+            {
+                ++i;
+            }
+            if (iDataArr[i] > tmp) // 不满足大根堆，调整
+            {
+                iDataArr[iIdx] = iDataArr[i];
+                iIdx = i; // 本来这里要交换的，但时tmp暂时存放了初始iDataArr[iIdx]的值，这里每次比较都是和tmp比较,好比交换了，所以可以不用先交换
+                // 继续向下调整，直到树满足大根堆性质
+            }
+            else
+            {
+                break;
+            }
+
+            iDataArr[iIdx] = tmp;
+        }
+    }
+    else
+    {
+        for (int i = iIdx * 2 + 1; i <= iDataSize; i++) // 从要调整的数据的左孩子开始比较
+        {
+            // 选出左右孩子中的最小结点
+            if (i + 1 <= iDataSize && iDataArr[i] > iDataArr[i + 1])
+            {
+                ++i;
+            }
+            if (iDataArr[i] < tmp) // 不满足大根堆，调整
+            {
+                iDataArr[iIdx] = iDataArr[i];
+                iIdx = i; // 本来这里要交换的，但时tmp暂时存放了初始iDataArr[iIdx]的值，这里每次比较都是和tmp比较,好比交换了，所以可以不用先交换
+                // 继续向下调整，直到树满足大根堆性质
+            }
+            else
+            {
+                break;
+            }
+
+            iDataArr[iIdx] = tmp;
+        }
+    }
+}
+template <typename T>
+void Adjust(std::vector<T> &iDataArr, int iIdx, int iDataSize, bool bOrder = 1)
+{
+    T tmp = iDataArr[iIdx]; // 暂时存放要调整的数据
+    if (bOrder)
+    {
+        for (int i = iIdx * 2 + 1; i <= iDataSize; i++) // 从要调整的数据的左孩子开始比较
+        {
+            // 选出左右孩子中的最大结点
+            if (i + 1 <= iDataSize && iDataArr[i] < iDataArr[i + 1])
+            {
+                ++i;
+            }
+            if (iDataArr[i] > tmp) // 不满足大根堆，调整
+            {
+                iDataArr[iIdx] = iDataArr[i];
+                iIdx = i; // 本来这里要交换的，但时tmp暂时存放了初始iDataArr[iIdx]的值，这里每次比较都是和tmp比较,好比交换了，所以可以不用先交换
+                // 继续向下调整，直到树满足大根堆性质
+            }
+            else
+            {
+                break;
+            }
+
+            iDataArr[iIdx] = tmp;
+        }
+    }
+    else
+    {
+        for (int i = iIdx * 2 + 1; i <= iDataSize; i++) // 从要调整的数据的左孩子开始比较
+        {
+            // 选出左右孩子中的最小结点
+            if (i + 1 <= iDataSize && iDataArr[i] > iDataArr[i + 1])
+            {
+                ++i;
+            }
+            if (iDataArr[i] < tmp) // 不满足大根堆，调整
+            {
+                iDataArr[iIdx] = iDataArr[i];
+                iIdx = i; // 本来这里要交换的，但时tmp暂时存放了初始iDataArr[iIdx]的值，这里每次比较都是和tmp比较,好比交换了，所以可以不用先交换
+                // 继续向下调整，直到树满足大根堆性质
+            }
+            else
+            {
+                break;
+            }
+
+            iDataArr[iIdx] = tmp;
+        }
+    }
+}
+// 堆排序, 时间复杂度O(nlogn), 空间复杂度O(1), 不稳定
+// iDataArr: input/output, 数据数组
+// iDataSize: input, 数据长度
+// bOrder: input, 排序顺序, 0-从高到低(升序), 1-从低到高(降序)
+template <typename T>
+void HeapSort(T *iDataArr, int iDataSize, bool bOrder = 1)
+{
+    for (int i = iDataSize / 2 - 1; i >= 0; i--)
+    {
+        Adjust(iDataArr, i, iDataSize - 1, bOrder); // 最后一个非叶子结点和它的孩子比较调整
+    }
+    //排序，根结点后最后一个结点交换，调整
+    for (int i = iDataSize - 1; i > 0; --i)
+    {
+        swap(iDataArr[0], iDataArr[i]);     // 每次选出一个最大的数放到末尾，也就是数组末尾
+        Adjust(iDataArr, 0, i - 1, bOrder); // 调整根结点到 i-1 个结点为大根堆
+    }
+}
+template <typename T>
+void HeapSort(std::vector<T> &iDataArr, int iDataSize, bool bOrder = 1)
+{
+    for (int i = iDataSize / 2 - 1; i >= 0; i--)
+    {
+        Adjust(iDataArr, i, iDataSize - 1, bOrder); // 最后一个非叶子结点和它的孩子比较调整
+    }
+    //排序，根结点后最后一个结点交换，调整
+    for (int i = iDataSize - 1; i > 0; --i)
+    {
+        swap(iDataArr[0], iDataArr[i]);     // 每次选出一个最大的数放到末尾，也就是数组末尾
+        Adjust(iDataArr, 0, i - 1, bOrder); // 调整根结点到 i-1 个结点为大根堆
+    }
+}
+
+// 桶排序, 时间复杂度O(n+k), 空间复杂度O(n+k), 稳定
+// iDataArr: input/output, 数据数组
+// iDataSize: input, 数据长度
+// iBucketSize: input, 桶的数量
+// bOrder: input, 排序顺序, 0-从高到低(升序), 1-从低到高(降序)
+template <typename T>
+void BucketSort(T *iDataArr, int iDataSize, int iBucketSize = 5, bool bOrder = 1)
+{
+    T max_val, min_val;
+    max_val = min_val = iDataArr[0];
+
+    // 最大值
+    MaxMinVal(iDataArr, iDataSize, max_val, min_val);
+
+    // 创建桶并初始化
+    T *buckets = (T *)malloc(max_val * sizeof(T));
+    memset(buckets, 0, max_val * sizeof(T));
+
+    // 计数
+    for (int i = 0; i < iDataSize; i++)
+    {
+        buckets[iDataArr[i]]++;
+    }
+
+    // 排序
+    for (int i = 0, j = 0; i < max_val; i++)
+    {
+        while ((buckets[i]--) > 0)
+        {
+            iDataArr[j++] = i;
+        }
+    }
+
+    free(buckets);
+}
+
 int test1()
 {
     int test_data[] = {3, 6, 1, 9, 4, 2, 0, 5, 8, 7, 10, 20, 15, 19, 16, 18};
@@ -662,7 +856,9 @@ int test1()
         printf("%d, ", test_data[i]);
     }
     printf("\n");
-    CountSort(test_data, test_size, 0);
+    BucketSort(test_data, test_size, 1);
+    //HeapSort(test_data, test_size, 1);
+    //CountSort(test_data, test_size, 0);
     //ShellSort(test_data, test_size, 1);
     //MergeSort1D(test_data, test_size, 0);
     //BubbleSort1D(test_data, test_size, 0);
@@ -685,6 +881,7 @@ int test2()
         printf("%d, ", test_data[i]);
     }
     printf("\n");
+    //HeapSort(test_data, test_size, 0);
     CountSort(test_data, test_size, 1);
     //ShellSort(test_data, test_size, 0);
     //MergeSort1D(test_data, test_size, 0);
